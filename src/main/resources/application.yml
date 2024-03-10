@@ -1,0 +1,20 @@
+application:
+  users-white-list: andrej_nik
+  telegram:
+    bot-token: changeme
+    bot-name: gpt-bot
+  gpt:
+    url: https://api.openai.com
+    token: changeme
+    model: gpt-3.5-turbo-instruct
+    maxTokens: 150
+    temperature: 0
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 3000
+        readTimeout: 5000
+        metrics:
+          enabled: false
