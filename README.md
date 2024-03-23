@@ -7,6 +7,6 @@
 
 Для локальной разработки для доступа к gpt можно указать настойки proxy
 ```
--Dhttps.proxyHost=189.240.60.164
--Dhttps.proxyPort=9090
+-Dhttps.proxyHost=...
+-Dhttps.proxyPort=...
 ```
