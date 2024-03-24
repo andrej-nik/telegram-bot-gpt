@@ -5,7 +5,7 @@
 2. Указать токен telegram в свойстве `application.telegram.bot-token`
 3. Указать токен gpt в свойстве `application.gpt.token`
 
-Для локальной разработки для доступа к gpt можно указать настойки proxy
+При локальной разработке для доступа к gpt можно указать параметры JVM proxy
 ```
 -Dhttps.proxyHost=...
 -Dhttps.proxyPort=...
