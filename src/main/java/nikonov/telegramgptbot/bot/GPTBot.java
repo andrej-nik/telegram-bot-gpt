@@ -3,7 +3,6 @@ package nikonov.telegramgptbot.bot;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nikonov.telegramgptbot.service.GPTService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.scheduling.TaskScheduler;
@@ -31,24 +30,29 @@ import static nikonov.telegramgptbot.utils.MessageKeys.WRITE_ANSWER_MESSAGE_KEY;
 @SuppressWarnings({"java:S4449"})
 public class GPTBot extends TelegramLongPollingBot {
     
-    @Value("${application.telegram.bot-token}")
-    private String telegramBotToken;
-    
-    @Value("${application.telegram.bot-name}")
-    private String telegramBotName;
-    
-    @Value("#{'${application.users-white-list}'.split(',')}")
-    private Set<String> users;
-    
-    @Autowired
-    private GPTService gptService;
-    
-    @Autowired
-    private MessageSource messageSource;
-    
-    @Autowired
-    private TaskScheduler taskScheduler;
-    
+    private final String telegramBotName;
+    private final Set<String> users;
+    private final GPTService gptService;
+    private final MessageSource messageSource;
+    private final TaskScheduler taskScheduler;
+
+    public GPTBot(
+            @Value("${application.telegram.bot-token}") String telegramBotToken,
+            @Value("${application.telegram.bot-name}") String telegramBotName,
+            @Value("#{'${application.users-white-list}'.split(',')}") Set<String> users,
+            GPTService gptService, 
+            MessageSource messageSource, 
+            TaskScheduler taskScheduler) {
+
+        super(telegramBotToken);
+        this.telegramBotName = telegramBotName;
+
+        this.users = users;
+        this.gptService = gptService;
+        this.messageSource = messageSource;
+        this.taskScheduler = taskScheduler;
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         
@@ -117,12 +121,6 @@ public class GPTBot extends TelegramLongPollingBot {
     public String getBotUsername() {
 
         return telegramBotName;
-    }
-
-    @Override
-    public String getBotToken() {
-        
-        return telegramBotToken;
     }
 
     private static String getUserName(Update update) {
