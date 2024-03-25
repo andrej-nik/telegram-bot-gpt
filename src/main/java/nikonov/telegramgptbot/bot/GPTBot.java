@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import static nikonov.telegramgptbot.utils.MessageKeys.ACCESS_DENIED_MESSAGE_KEY;
+import static nikonov.telegramgptbot.utils.MessageKeys.GREETING;
 import static nikonov.telegramgptbot.utils.MessageKeys.WRITE_ANSWER_MESSAGE_KEY;
 
 /**
@@ -52,8 +53,12 @@ public class GPTBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         
         if ( hasText(update) && hasAccess(update)) {
-            
+
             var chatId = update.getMessage().getChatId().toString();
+            if (isStartCommand(update)) {
+                sendMessage(chatId, getMessage(GREETING));
+                return;
+            }
             var messageId = sendMessage(chatId, getMessage(WRITE_ANSWER_MESSAGE_KEY, ""));
             var writeAnswerTask = taskScheduler.scheduleAtFixedRate(
                     new WriteAnswerTask(chatId, messageId), 
@@ -62,6 +67,11 @@ public class GPTBot extends TelegramLongPollingBot {
             cancelTask(writeAnswerTask);
             sendMessage(chatId, messageId, response);
         }
+    }
+    
+    private static boolean isStartCommand(Update update) {
+        
+        return update.getMessage().getText().equals("/start");
     }
 
     private boolean hasAccess(Update update) {
