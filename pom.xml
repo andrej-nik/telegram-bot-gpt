@@ -18,7 +18,7 @@
 		<java.version>17</java.version>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
 		<lombok.version>1.18.26</lombok.version>
-		<telegrambots-spring-boot-starter.version>6.7.0</telegrambots-spring-boot-starter.version>
+		<telegrambots-spring-boot-starter.version>6.9.7.1</telegrambots-spring-boot-starter.version>
 	</properties>
 	
 	<dependencyManagement>
