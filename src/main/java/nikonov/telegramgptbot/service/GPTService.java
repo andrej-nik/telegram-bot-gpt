@@ -28,7 +28,7 @@ public class GPTService {
     private final int maxTokens;
     
     @Value("${application.gpt.temperature}")
-    private final int temperature;
+    private final double temperature;
     
     private final GPTHttpClient gptHttpClient;
 

@@ -22,5 +22,5 @@ public class GPTRequest {
     private int maxTokens;
     
     @JsonProperty("temperature")
-    private int temperature;
+    private double temperature;
 }
