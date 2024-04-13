@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Конфигурация http клиента GPT
- * 
- * @author Andrej Nikonov
  */
 @RequiredArgsConstructor
 public class GPTHttpClientConfiguration {

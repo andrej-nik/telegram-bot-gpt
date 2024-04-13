@@ -1,18 +1,3 @@
-server:
-  shutdown: graceful
-  tomcat:
-    mbeanregistry:
-      enabled: true
-
-spring:
-  task:
-    scheduling:
-      pool:
-        size: 4
-      shutdown:
-        await-termination: true
-        await-termination-period: 30s
-
 application:
   users-white-list: andrej_nik
   telegram:

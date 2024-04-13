@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Интерсептор, добавляющий токен авторизаций GPT
- * 
- * @author Andrej Nikonov
  */
 @Slf4j
 @RequiredArgsConstructor

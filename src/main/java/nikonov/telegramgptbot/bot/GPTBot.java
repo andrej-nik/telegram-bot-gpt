@@ -5,25 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import nikonov.telegramgptbot.service.GPTService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.time.Duration;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 
-import static nikonov.telegramgptbot.utils.MessageKeys.ACCESS_DENIED_MESSAGE_KEY;
-import static nikonov.telegramgptbot.utils.MessageKeys.GREETING;
-import static nikonov.telegramgptbot.utils.MessageKeys.WRITE_ANSWER_MESSAGE_KEY;
+import static nikonov.telegramgptbot.utils.MessageKey.ACCESS_DENIED_MESSAGE_KEY;
+import static nikonov.telegramgptbot.utils.MessageKey.ERROR_MESSAGE_KEY;
+import static nikonov.telegramgptbot.utils.MessageKey.START_MESSAGE_KEY;
 
 /**
  * GPT бот
- * 
- * @author Andrej Nikonov
  */
 @Slf4j
 @Component
@@ -34,15 +30,13 @@ public class GPTBot extends TelegramLongPollingBot {
     private final Set<String> users;
     private final GPTService gptService;
     private final MessageSource messageSource;
-    private final TaskScheduler taskScheduler;
 
     public GPTBot(
             @Value("${application.telegram.bot-token}") String telegramBotToken,
             @Value("${application.telegram.bot-name}") String telegramBotName,
             @Value("#{'${application.users-white-list}'.split(',')}") Set<String> users,
             GPTService gptService, 
-            MessageSource messageSource, 
-            TaskScheduler taskScheduler) {
+            MessageSource messageSource) {
 
         super(telegramBotToken);
         this.telegramBotName = telegramBotName;
@@ -50,7 +44,6 @@ public class GPTBot extends TelegramLongPollingBot {
         this.users = users;
         this.gptService = gptService;
         this.messageSource = messageSource;
-        this.taskScheduler = taskScheduler;
     }
 
     @Override
@@ -60,16 +53,23 @@ public class GPTBot extends TelegramLongPollingBot {
 
             var chatId = update.getMessage().getChatId().toString();
             if (isStartCommand(update)) {
-                sendMessage(chatId, getMessage(GREETING));
+                sendMessage(chatId, getMessage(START_MESSAGE_KEY));
                 return;
             }
-            var messageId = sendMessage(chatId, getMessage(WRITE_ANSWER_MESSAGE_KEY, ""));
-            var writeAnswerTask = taskScheduler.scheduleAtFixedRate(
-                    new WriteAnswerTask(chatId, messageId), 
-                    Duration.ofSeconds(1));
-            var response = gptService.getGPTResponse(update.getMessage().getText());
-            cancelTask(writeAnswerTask);
-            sendMessage(chatId, messageId, response);
+            sendAction(chatId, ActionType.TYPING);
+            var gptResponse = getGPTResponse(update.getMessage().getText());
+            sendMessage(chatId, gptResponse);
+        }
+    }
+    
+    private String getGPTResponse(String prompt) {
+        
+        try {
+            return gptService.getGPTResponse(prompt);
+        } catch (Exception exp) {
+            
+            log.error("Error prompt {} GPT", prompt, exp);
+            return messageSource.getMessage(ERROR_MESSAGE_KEY, null, null);
         }
     }
     
@@ -92,29 +92,21 @@ public class GPTBot extends TelegramLongPollingBot {
     }
     
     @SneakyThrows
-    private Integer sendMessage(String chatId, String text) {
+    private void sendMessage(String chatId, String text) {
 
         var message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
-        return execute(message).getMessageId();
+        execute(message);
     }
-    
+
     @SneakyThrows
-    private void sendMessage(String chatId, Integer messageId, String text) {
+    private void sendAction(String chatId, ActionType type) {
 
-        var editMessage = new EditMessageText();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(messageId);
-        editMessage.setText(text);
-        execute(editMessage);
-    }
-    
-    private void cancelTask(ScheduledFuture<?> task) {
-
-        do {
-            task.cancel(false);
-        } while (!task.isCancelled());
+        var action = new SendChatAction();
+        action.setChatId(chatId);
+        action.setAction(type);
+        execute(action);
     }
 
     @Override 
@@ -140,36 +132,5 @@ public class GPTBot extends TelegramLongPollingBot {
 
     private String getMessage(String key) {
         return messageSource.getMessage(key, null, null);
-    }
-    
-    private String getMessage(String key, Object args) {
-        return messageSource.getMessage(key, new Object[] {args}, null);
-    }
-    
-    private class WriteAnswerTask implements Runnable {
-        
-        private static final String DOT = ".";
-        private static final int DOT_REPEAT_MAX = 5;
-        
-        private final String chatId;
-        private final int messageId;
-        private int counter;
-        
-        public WriteAnswerTask(String chatId, Integer messageId) {
-            
-            this.chatId = chatId;
-            this.messageId = messageId;
-        }
-        
-        @Override
-        @SneakyThrows
-        public void run() {
-            
-            var message = new EditMessageText();
-            message.setChatId(chatId);
-            message.setMessageId(messageId);
-            message.setText(getMessage(WRITE_ANSWER_MESSAGE_KEY, DOT.repeat(++counter % DOT_REPEAT_MAX)));
-            execute(message);
-        }
     }
 }

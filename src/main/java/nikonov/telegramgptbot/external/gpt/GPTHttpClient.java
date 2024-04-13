@@ -13,14 +13,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Http клиент к GPT
- *
- * @author Andrej Nikonov
  */
 @FeignClient(
         name = "gpt-http-client", 
         url = "${application.gpt.url}", 
-        configuration = GPTHttpClientConfiguration.class,
-        fallbackFactory = GPTHttpClientFallbackFactory.class)
+        configuration = GPTHttpClientConfiguration.class)
 public interface GPTHttpClient {
 
     @PostMapping(
