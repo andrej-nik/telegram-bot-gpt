@@ -9,6 +9,12 @@ application:
     model: gpt-3.5-turbo-instruct
     maxTokens: 150
     temperature: 0
+  http-proxy:
+    enabled: false
+    host: changeme
+    port: changeme
+    user: changeme
+    password: changeme
 
 feign:
   client:
