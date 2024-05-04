@@ -1,4 +1,4 @@
-package nikonov.telegramgptbot.external.gpt.configuration;
+package nikonov.telegramaibot.client.chatgpt.configuration;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

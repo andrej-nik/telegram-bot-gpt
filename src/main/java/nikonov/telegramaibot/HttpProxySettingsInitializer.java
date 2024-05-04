@@ -1,8 +1,8 @@
-package nikonov.telegramgptbot;
+package nikonov.telegramaibot;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nikonov.telegramgptbot.domain.config.HttpProxySettings;
+import nikonov.telegramaibot.domain.properties.HttpProxyProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +25,7 @@ public class HttpProxySettingsInitializer {
     private static final String HTTP_PORT = "http.proxyPort";
     private static final String DISABLED_SCHEMES = "jdk.http.auth.tunneling.disabledSchemes";
     
-    private final HttpProxySettings settings;
+    private final HttpProxyProperties settings;
     
     @PostConstruct
     public void init() {

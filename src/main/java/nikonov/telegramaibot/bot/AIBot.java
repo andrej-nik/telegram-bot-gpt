@@ -1,8 +1,8 @@
-package nikonov.telegramgptbot.bot;
+package nikonov.telegramaibot.bot;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import nikonov.telegramgptbot.service.GPTService;
+import nikonov.telegramaibot.service.AIService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -12,44 +12,38 @@ import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Set;
-
-import static nikonov.telegramgptbot.utils.MessageKey.ACCESS_DENIED_MESSAGE_KEY;
-import static nikonov.telegramgptbot.utils.MessageKey.ERROR_MESSAGE_KEY;
-import static nikonov.telegramgptbot.utils.MessageKey.START_MESSAGE_KEY;
+import static nikonov.telegramaibot.domain.MessageKey.ERROR_MESSAGE_KEY;
+import static nikonov.telegramaibot.domain.MessageKey.START_MESSAGE_KEY;
 
 /**
- * GPT бот
+ * AI бот
  */
 @Slf4j
 @Component
 @SuppressWarnings({"java:S4449"})
-public class GPTBot extends TelegramLongPollingBot {
+public class AIBot extends TelegramLongPollingBot {
     
     private final String telegramBotName;
-    private final Set<String> users;
-    private final GPTService gptService;
+    private final AIService aiService;
     private final MessageSource messageSource;
 
-    public GPTBot(
+    public AIBot(
             @Value("${application.telegram.bot-token}") String telegramBotToken,
             @Value("${application.telegram.bot-name}") String telegramBotName,
-            @Value("#{'${application.users-white-list}'.split(',')}") Set<String> users,
-            GPTService gptService, 
+            AIService aiService, 
             MessageSource messageSource) {
 
         super(telegramBotToken);
+        
         this.telegramBotName = telegramBotName;
-
-        this.users = users;
-        this.gptService = gptService;
+        this.aiService = aiService;
         this.messageSource = messageSource;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         
-        if ( hasText(update) && hasAccess(update)) {
+        if (hasText(update)) {
 
             var chatId = update.getMessage().getChatId().toString();
             if (isStartCommand(update)) {
@@ -57,15 +51,15 @@ public class GPTBot extends TelegramLongPollingBot {
                 return;
             }
             sendAction(chatId, ActionType.TYPING);
-            var gptResponse = getGPTResponse(update.getMessage().getText());
-            sendMessage(chatId, gptResponse);
+            var response = getAIResponse(update.getMessage().getText());
+            sendMessage(chatId, response);
         }
     }
     
-    private String getGPTResponse(String prompt) {
+    private String getAIResponse(String prompt) {
         
         try {
-            return gptService.getGPTResponse(prompt);
+            return aiService.getAIResponse(prompt);
         } catch (Exception exp) {
             
             log.error("Error prompt {} GPT", prompt, exp);
@@ -76,19 +70,6 @@ public class GPTBot extends TelegramLongPollingBot {
     private static boolean isStartCommand(Update update) {
         
         return update.getMessage().getText().equals("/start");
-    }
-
-    private boolean hasAccess(Update update) {
-
-        var username = getUserName(update);
-        if ( !hasUserAccess(username) ) {
-            log.info("Запрос от неизвестного пользователя: {}", username);
-            sendMessage(
-                    update.getMessage().getChatId().toString(),
-                    getMessage(ACCESS_DENIED_MESSAGE_KEY));
-            return false;
-        }
-        return true;
     }
     
     @SneakyThrows
@@ -113,16 +94,6 @@ public class GPTBot extends TelegramLongPollingBot {
     public String getBotUsername() {
 
         return telegramBotName;
-    }
-
-    private static String getUserName(Update update) {
-
-        return update.getMessage().getFrom().getUserName();
-    }
-
-    private boolean hasUserAccess(String username) {
-
-        return users.contains(username);
     }
 
     private static boolean hasText(Update update) {

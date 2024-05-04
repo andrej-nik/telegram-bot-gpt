@@ -1,4 +1,4 @@
-package nikonov.telegramgptbot.external.gpt.dto;
+package nikonov.telegramaibot.client.chatgpt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -6,11 +6,9 @@ import lombok.Data;
 /**
  * Запрос к GPT
  * https://platform.openai.com/docs/api-reference/completions/create
- * 
- * @author Andrej Nikonov
  */
 @Data
-public class GPTRequest {
+public class ChatGPTRequest {
     
     @JsonProperty("model")
     private String model;

@@ -1,12 +1,7 @@
-## Telegram bot gpt
+## Telegram ai bot 
 
 ### Запуск
-1. Указать идентификаторы пользователей telegram в свойстве `application.users-white-list`
-2. Указать токен telegram в свойстве `application.telegram.bot-token`
-3. Указать токен gpt в свойстве `application.gpt.token`
+1. Указать токен telegram в свойстве `application.telegram.bot-token`
+2. Настроить ai сервис. Например chatGPT - `application.gpt-chat.*`
 
-При локальной разработке для доступа к gpt можно указать параметры JVM proxy
-```
--Dhttps.proxyHost=...
--Dhttps.proxyPort=...
-```
+При необходимости можно включить http-proxy - настройки - `application.http-proxy`

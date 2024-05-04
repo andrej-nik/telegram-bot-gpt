@@ -1,4 +1,4 @@
-package nikonov.telegramgptbot.external.gpt.dto;
+package nikonov.telegramaibot.client.chatgpt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -8,15 +8,13 @@ import java.util.List;
 /**
  * Ответ от GPT
  * https://platform.openai.com/docs/api-reference/completions/create
- * 
- * @author Andrej Nikonov
  */
 @Data
-public class GPTResponse {
+public class ChatGPTResponse {
 
     @JsonProperty("model")
     private String model;
     
     @JsonProperty("choices")
-    private List<GPTChoices> choices;
+    private List<ChatGPTChoices> choices;
 }

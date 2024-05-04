@@ -1,13 +1,10 @@
-package nikonov.telegramgptbot.external.gpt.dto;
+package nikonov.telegramaibot.client.chatgpt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-/**
- * @author Andrej Nikonov
- */
 @Data
-public class GPTChoices {
+public class ChatGPTChoices {
 
     @JsonProperty("text")
     private String text;
