@@ -5,20 +5,24 @@ import nikonov.telegramaibot.client.chatgpt.ChatGPTHttpClient;
 import nikonov.telegramaibot.client.chatgpt.dto.ChatGPTChoices;
 import nikonov.telegramaibot.client.chatgpt.dto.ChatGPTRequest;
 import nikonov.telegramaibot.client.chatgpt.dto.ChatGPTResponse;
+import nikonov.telegramaibot.domain.AIResponse;
+import nikonov.telegramaibot.domain.AITextResponse;
 import nikonov.telegramaibot.domain.properties.ChatGPTProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Сервис chatGPT
  */
+@Service
 @RequiredArgsConstructor
-public class ChatGPTService implements AIService {
+@ConditionalOnProperty(prefix = "application.chat-gpt", name = "enabled", havingValue = "true")
+public class ChatGPTAIService implements AIService {
     
     private final ChatGPTProperties properties;
-    
     private final ChatGPTHttpClient client;
 
     /**
@@ -28,9 +32,9 @@ public class ChatGPTService implements AIService {
      * @return ответ               
      */
     @Override
-    public String getAIResponse(String prompt) {
+    public AIResponse getAIResponse(String prompt) {
 
-        return client
+        var response = client
                 .getChatGPTResponse(
                         new ChatGPTRequest()
                                 .setModel(properties.getModel())
@@ -43,5 +47,6 @@ public class ChatGPTService implements AIService {
                                 Optional.empty() : 
                                 Optional.of(choices.get(0))).map(ChatGPTChoices::getText)
                 .orElseThrow();
+        return new AITextResponse().setText(response);
     }
 }

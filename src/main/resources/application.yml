@@ -1,14 +1,20 @@
 application:
+  ai-model:
+    type: changeme
   telegram:
     bot-token: changeme
-    bot-name: gpt-bot
+    bot-name: ai-bot
   chat-gpt:
-    enabled: true
+    enabled: false
     url: https://api.openai.com
     token: changeme
-    model: gpt-3.5-turbo-instruct
+    model: changeme
     maxTokens: 150
     temperature: 0
+  hugging-face:
+    enabled: false
+    url: changeme
+    token: changeme
   http-proxy:
     enabled: false
     host: changeme
