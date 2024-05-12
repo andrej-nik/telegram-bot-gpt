@@ -1,32 +1,32 @@
 application:
   ai-model:
-    type: changeme
+    type: ${AI_MODEL_TYPE:IMAGE}
   telegram:
-    bot-token: changeme
+    bot-token: ${TELEGRAM_BOT_TOKEN:token}
     bot-name: ai-bot
   chat-gpt:
-    enabled: false
+    enabled: ${CHAT_GPT_ENABLED:false}
     url: https://api.openai.com
-    token: changeme
-    model: changeme
-    maxTokens: 150
-    temperature: 0
+    token: ${CHAT_GPT_TOKEN:token}
+    model: ${CHAT_GPT_MODEL:model}
+    maxTokens: ${CHAT_GPT_MAX_TOKENS:150}
+    temperature: ${CHAT_GPT_TEMPERATURE:0}
   hugging-face:
-    enabled: false
-    url: changeme
-    token: changeme
+    enabled: ${HUGGING_FACE_ENABLED:false}
+    url: ${HUGGING_FACE_URL:url}
+    token: ${HUGGING_FACE_TOKEN:token}
   http-proxy:
-    enabled: false
-    host: changeme
-    port: changeme
-    user: changeme
-    password: changeme
+    enabled: ${HTTP_PROXY_ENABLED:false}
+    host: ${HTTP_PROXY_HOST:host}
+    port: ${HTTP_PROXY_PORT:8080}
+    user: ${HTTP_PROXY_USER:user}
+    password: ${HTTP_PROXY_PASSWORD:password}
 
 feign:
   client:
     config:
       default:
-        connectTimeout: 3000
-        readTimeout: 5000
+        connectTimeout: ${FEIGN_CLIENT_CONNECT_TIMEOUT:15000}
+        readTimeout: ${FEIGN_CLIENT_READ_TIMEOUT:25000}
         metrics:
-          enabled: false
+          enabled: ${FEIGN_CLIENT_METRICS_ENABLED:false}
