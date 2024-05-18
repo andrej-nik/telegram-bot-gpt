@@ -8,8 +8,6 @@ docker save telegram-bot > telegram-bot.tar
 set SERVER_USER=
 set SERVER_IP=
 set SERVER_PATH=
-scp telegram-bot.tar %SERVER_USER%@%SERVER_IP%:%SERVER_PATH%
-scp deploy_on_vm.cmd %SERVER_USER%@%SERVER_IP%:%SERVER_PATH%
-scp bot.env %SERVER_USER%@%SERVER_IP%:%SERVER_PATH%
+scp telegram-bot.tar bot.env %SERVER_USER%@%SERVER_IP%:%SERVER_PATH%
 
 ENDLOCAL
